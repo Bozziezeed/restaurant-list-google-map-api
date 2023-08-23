@@ -1,11 +1,17 @@
 <template>
     <div class="row align-items-start">
-        <div class="col-md-4">
+        <div
+            class="col-md-4 overflow-auto"
+            :class="{ googlemap: restaurants.length > 0 }"
+        >
             <form class="mb-2" @submit.prevent="searchRestaurants">
                 <div class="mb-2">
-                    <label for="Restaurant Finder" class="form-label"
-                        ><h4>Restaurant Finder</h4>
-                    </label>
+                    <div>
+                        <label for="Restaurant Finder" class="form-label"
+                            ><h4>Restaurant Finder</h4>
+                        </label>
+                    </div>
+
                     <input
                         v-model="searchKeyword"
                         placeholder="Enter a keyword"
@@ -30,14 +36,14 @@
         <div id="map" class="col-md-8">
             <GoogleMap
                 :api-key="apikey"
-                style="width: 100%; height: 1000px"
+                style="width: 100%; height: 700px"
                 :center="center"
                 :zoom="15"
             >
                 <Marker
                     v-for="(markerOption, index) in markerOptions"
                     :key="index"
-                    :options="{}"
+                    :options="markerOption"
                 />
             </GoogleMap>
         </div>
@@ -56,15 +62,20 @@ export default defineComponent({
             apikey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
             searchKeyword: "Bang sue", // Set the default keyword here
             restaurants: [],
-            map: null,
             center: { lat: 13.828253, lng: 100.5284507 }, // Initialize with a placeholder value
             markerOptions: [],
         };
     },
+    //   setup() {
+    //     //const center = { lat: 13.828253, lng: 100.5284507 };
+    //     const markerOptions = [];
+
+    //     return { markerOptions };
+    //   },
     methods: {
         searchRestaurants() {
             axios
-                .get("/api/restaurants", {
+                .get("http://127.0.0.1:8000/api/restaurants", {
                     params: {
                         keyword: this.searchKeyword,
                     },
@@ -87,7 +98,7 @@ export default defineComponent({
                             lng: sumLng / this.restaurants.length,
                         };
 
-                        // Create marker options
+                        //Create marker options
                         this.markerOptions = this.restaurants.map(
                             (restaurant) => {
                                 return {
@@ -95,20 +106,16 @@ export default defineComponent({
                                         lat: restaurant.latitude,
                                         lng: restaurant.longitude,
                                     },
-                                    label: "R",
                                     title: restaurant.name,
                                 };
                             }
                         );
 
-                        // Calculate bounds for the map to fit all markers
+                        // CalculmarkerOptionsounds for the map to fit all markers
                         const bounds = new google.maps.LatLngBounds();
                         this.markerOptions.forEach((markerOption) => {
                             bounds.extend(markerOption.position);
                         });
-
-                        // Set the map's bounds to show all markers
-                        this.$refs.googleMap.$mapObject.fitBounds(bounds);
                     }
                 })
                 .catch((error) => {
@@ -120,4 +127,7 @@ export default defineComponent({
 </script>
 <style>
 /* Your styles here */
+.googlemap {
+    height: 700px;
+}
 </style>

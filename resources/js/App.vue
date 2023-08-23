@@ -1,13 +1,11 @@
 <template>
-    <div class="container mt-3 overflow-auto googlemap">
+    <div class="container mt-3">
         <show-map />
     </div>
 </template>
 
 <script>
 import ShowMap from "./components/ShowMap.vue";
-// import GoogleMap from "./components/GoogleMap.vue";
-
 export default {
     name: "App",
     components: {
@@ -18,7 +16,4 @@ export default {
 
 <style>
 /* Your styles here */
-.googlemap {
-    height: 1000px;
-}
 </style>
