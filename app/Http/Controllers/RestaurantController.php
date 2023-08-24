@@ -14,6 +14,13 @@ class RestaurantController extends Controller
         $keyword = $request->input('keyword');
 
 
+        // Try to retrieve cached results first
+        $cachedResults = Cache::get('search:' . $keyword);
+        if ($cachedResults) {
+            Log::info("cache cached results:", $cachedResults);
+            return response()->json($cachedResults);
+        }
+
         // Create the getLocationUrl
         $getLocationUrl = 'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?' . http_build_query([
             "fields" => "formatted_address,name,geometry",
@@ -21,15 +28,6 @@ class RestaurantController extends Controller
             'inputtype' => "textquery",
             'key' => config('app.GOOGLE_MAPS_API_KEY'),
         ]);
-
-        // Log the full URL
-        // Log::info('Google Maps API Request URL:', ['url' => $getLocationUrl]);
-
-        // Try to retrieve cached results first
-        $cachedResults = Cache::get('search:' . $keyword);
-        if ($cachedResults) {
-            return response()->json($cachedResults);
-        }
 
 
         // Send the HTTP responseLocation
@@ -92,6 +90,6 @@ class RestaurantController extends Controller
         Cache::put('search:' . $keyword, $restaurants, now()->addHours(1));
 
         // Return the extracted restaurant data
-        return response()->json(['restaurants' => $restaurants]);
+        return response()->json($restaurants);
     }
 }

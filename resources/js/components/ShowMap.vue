@@ -66,12 +66,7 @@ export default defineComponent({
             markerOptions: [],
         };
     },
-    //   setup() {
-    //     //const center = { lat: 13.828253, lng: 100.5284507 };
-    //     const markerOptions = [];
 
-    //     return { markerOptions };
-    //   },
     methods: {
         searchRestaurants() {
             axios
